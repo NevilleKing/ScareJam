@@ -30,8 +30,7 @@ public class PlayerController : MonoBehaviour {
         if (horizontal != 0.0f || vertical != 0.0f)
         {
             Vector3 direction = new Vector3(horizontal, 0.0f, vertical); // set the direction the player will move in
-            Debug.Log(direction);
-            transform.Translate(direction * velocity * Time.deltaTime);
+            transform.Translate(direction * velocity * Time.deltaTime); // apply the movement to the player
         }
     }
 }
