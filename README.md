@@ -1,2 +1,3 @@
 # ScareJam
-Game Jam 6/11/15-7/11/15
+Game Jam 6-7 November 2015
+Adam Walker, Neville King & Ryan Burton
