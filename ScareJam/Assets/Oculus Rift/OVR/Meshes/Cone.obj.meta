@@ -24,9 +24,9 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+
     animationCompression: 1
     animationRotationError: .5
-    animationPositionError: .5
     animationScaleError: .5
     animationWrapMode: 0
     extraExposedTransformPaths: []
@@ -75,3 +75,7 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
