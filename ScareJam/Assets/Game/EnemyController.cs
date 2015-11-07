@@ -10,6 +10,8 @@ public class EnemyController : MonoBehaviour {
 
     private float timer = 3.0f;
 
+    private bool enemyMoving = true;
+
 	// Use this for initialization
 	void Start () {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -18,14 +20,29 @@ public class EnemyController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    if(timer > 0)
+        if (enemyMoving)
         {
-            timer -= Time.deltaTime;
-        }
-        else
-        {
-            anim.SetBool("isRunning", true);
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, enemySpeed);
+            if (timer > 0)
+            {
+                timer -= Time.deltaTime;
+            }
+            else
+            {
+                anim.SetBool("isRunning", true);
+                transform.position = Vector3.MoveTowards(transform.position, new Vector3(player.transform.position.x, 0.0f, player.transform.position.z), enemySpeed);
+            }
         }
 	}
+
+    // Check if the enemy is colliding
+    void OnCollisionEnter(Collision col)
+    {
+        if(col.transform.tag == "Player" && enemyMoving)
+        {
+            enemyMoving = false;
+            anim.SetBool("isRunning", false);
+            Destroy(player.GetComponent<OVRPlayerController>());
+            player.AddComponent<PlayerDead>();
+        }
+    }
 }
