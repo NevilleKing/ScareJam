@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SkyboxScript : MonoBehaviour {
+public class SkyboxScript : MonoBehaviour
+{
 
 
     public float rot = 0;
