@@ -97,12 +97,14 @@ public class OVRPlayerController : MonoBehaviour
     public float sprintDuration = 1.0f;
     private float sprintTimer;
 
-    private AudioSource walkingSound;
+    private AudioSource[] walkingSound;
 
     public float walkingSoundInterval = 0.4f;
     private float walkingSoundTimer;
+    public float heartbeatSoundInterval = 5.0f;
+    private float heartbeatSoundTimer;
 
-	void Start()
+    void Start()
 	{
 		// Add eye-depth as a camera offset from the player controller
 		var p = CameraRig.transform.localPosition;
@@ -110,13 +112,14 @@ public class OVRPlayerController : MonoBehaviour
 		CameraRig.transform.localPosition = p;
         sprintTimer = sprintDuration;
         walkingSoundTimer = walkingSoundInterval;
+        heartbeatSoundTimer = heartbeatSoundInterval;
 	}
 
 	void Awake()
 	{
 		Controller = gameObject.GetComponent<CharacterController>();
 
-        walkingSound = gameObject.GetComponent<AudioSource>();
+        walkingSound = gameObject.GetComponents<AudioSource>();
 
 		if(Controller == null)
 			Debug.LogWarning("OVRPlayerController: No CharacterController attached.");
@@ -225,7 +228,7 @@ public class OVRPlayerController : MonoBehaviour
 
     private void PlayAudio()
     {
-        walkingSound.Play();
+        walkingSound[0].Play();
     }
 
 	public virtual void UpdateMovement()
@@ -243,6 +246,17 @@ public class OVRPlayerController : MonoBehaviour
         if (OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger))
         {
             trigger = true;
+        }
+
+        if (heartbeatSoundTimer < 0)
+        {
+            // play sound here
+            walkingSound[1].Play();
+            heartbeatSoundTimer = heartbeatSoundInterval;
+        }
+        else
+        {
+            heartbeatSoundTimer -= Time.deltaTime;
         }
 
         if (walkingSoundTimer < 0)
