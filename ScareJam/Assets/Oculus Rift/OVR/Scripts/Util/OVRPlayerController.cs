@@ -97,6 +97,11 @@ public class OVRPlayerController : MonoBehaviour
     public float sprintDuration = 1.0f;
     private float sprintTimer;
 
+    private AudioSource walkingSound;
+
+    public float walkingSoundInterval = 0.4f;
+    private float walkingSoundTimer;
+
 	void Start()
 	{
 		// Add eye-depth as a camera offset from the player controller
@@ -104,11 +109,14 @@ public class OVRPlayerController : MonoBehaviour
 		p.z = OVRManager.profile.eyeDepth;
 		CameraRig.transform.localPosition = p;
         sprintTimer = sprintDuration;
+        walkingSoundTimer = walkingSoundInterval;
 	}
 
 	void Awake()
 	{
 		Controller = gameObject.GetComponent<CharacterController>();
+
+        walkingSound = gameObject.GetComponent<AudioSource>();
 
 		if(Controller == null)
 			Debug.LogWarning("OVRPlayerController: No CharacterController attached.");
@@ -215,6 +223,11 @@ public class OVRPlayerController : MonoBehaviour
 			MoveThrottle += (actualXZ - predictedXZ) / (SimulationRate * Time.deltaTime);
 	}
 
+    private void PlayAudio()
+    {
+        walkingSound.Play();
+    }
+
 	public virtual void UpdateMovement()
 	{
 		if (HaltUpdateMovement)
@@ -230,6 +243,26 @@ public class OVRPlayerController : MonoBehaviour
         if (OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger))
         {
             trigger = true;
+        }
+
+        if (walkingSoundTimer < 0)
+        {
+            if (moveForward || moveBack || moveLeft || moveRight || OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).x != 0.0f || OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).y != 0.0f)
+            {
+                PlayAudio();
+                walkingSoundTimer = walkingSoundInterval;
+            }
+        }
+        else
+        {
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || (trigger && sprintTimer > 0))
+            {
+                walkingSoundTimer -= Time.deltaTime* 2;
+            }
+            else
+            {
+                walkingSoundTimer -= Time.deltaTime;
+            }
         }
 
         MoveScale = 1.0f;
