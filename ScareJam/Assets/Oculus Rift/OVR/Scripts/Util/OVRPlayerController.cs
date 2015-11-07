@@ -349,6 +349,7 @@ public class OVRPlayerController : MonoBehaviour
 		euler.y += secondaryAxis.x * rotateInfluence;
 
 		transform.rotation = Quaternion.Euler(euler);
+
 	}
 
 	/// <summary>
