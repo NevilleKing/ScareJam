@@ -247,7 +247,7 @@ public class OVRPlayerController : MonoBehaviour
 
         if (walkingSoundTimer < 0)
         {
-            if (moveForward || moveBack || moveLeft || moveRight)
+            if (moveForward || moveBack || moveLeft || moveRight || OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).x != 0.0f || OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).y != 0.0f)
             {
                 PlayAudio();
                 walkingSoundTimer = walkingSoundInterval;
@@ -255,7 +255,14 @@ public class OVRPlayerController : MonoBehaviour
         }
         else
         {
-            walkingSoundTimer -= Time.deltaTime;
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || (trigger && sprintTimer > 0))
+            {
+                walkingSoundTimer -= Time.deltaTime* 2;
+            }
+            else
+            {
+                walkingSoundTimer -= Time.deltaTime;
+            }
         }
 
         MoveScale = 1.0f;
