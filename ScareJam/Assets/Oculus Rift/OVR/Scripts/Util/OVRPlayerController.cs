@@ -94,12 +94,16 @@ public class OVRPlayerController : MonoBehaviour
 	private bool prevHatRight = false;
 	private float SimulationRate = 60f;
 
+    public float sprintDuration = 1.0f;
+    private float sprintTimer;
+
 	void Start()
 	{
 		// Add eye-depth as a camera offset from the player controller
 		var p = CameraRig.transform.localPosition;
 		p.z = OVRManager.profile.eyeDepth;
 		CameraRig.transform.localPosition = p;
+        sprintTimer = sprintDuration;
 	}
 
 	void Awake()
@@ -221,22 +225,14 @@ public class OVRPlayerController : MonoBehaviour
 		bool moveRight = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
 		bool moveBack = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow);
 
-		bool dpad_move = false;
+        bool trigger = false;
 
-		if (OVRInput.Get(OVRInput.Button.DpadUp))
-		{
-			moveForward = true;
-			dpad_move   = true;
+        if (OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger))
+        {
+            trigger = true;
+        }
 
-		}
-
-		if (OVRInput.Get(OVRInput.Button.DpadDown))
-		{
-			moveBack  = true;
-			dpad_move = true;
-		}
-
-		MoveScale = 1.0f;
+        MoveScale = 1.0f;
 
 		if ( (moveForward && moveLeft) || (moveForward && moveRight) ||
 			 (moveBack && moveLeft)    || (moveBack && moveRight) )
@@ -251,11 +247,9 @@ public class OVRPlayerController : MonoBehaviour
 		// Compute this for key movement
 		float moveInfluence = Acceleration * 0.1f * MoveScale * MoveScaleMultiplier;
 
-		// Run!
-		if (dpad_move || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-			moveInfluence *= 2.0f;
 
-		Quaternion ort = transform.rotation;
+
+        Quaternion ort = transform.rotation;
 		Vector3 ortEuler = ort.eulerAngles;
 		ortEuler.z = ortEuler.x = 0f;
 		ort = Quaternion.Euler(ortEuler);
@@ -270,20 +264,6 @@ public class OVRPlayerController : MonoBehaviour
 			MoveThrottle += ort * (transform.lossyScale.x * moveInfluence * BackAndSideDampen * Vector3.right);
 
 		Vector3 euler = transform.rotation.eulerAngles;
-
-		bool curHatLeft = OVRInput.Get(OVRInput.Button.PrimaryShoulder);
-
-		if (curHatLeft && !prevHatLeft)
-			euler.y -= RotationRatchet;
-
-		prevHatLeft = curHatLeft;
-
-		bool curHatRight = OVRInput.Get(OVRInput.Button.SecondaryShoulder);
-
-		if(curHatRight && !prevHatRight)
-			euler.y += RotationRatchet;
-
-		prevHatRight = curHatRight;
 
 		//Use keys to ratchet rotation
 		if (Input.GetKeyDown(KeyCode.Q))
@@ -302,7 +282,19 @@ public class OVRPlayerController : MonoBehaviour
 		moveInfluence = SimulationRate * Time.deltaTime * Acceleration * 0.1f * MoveScale * MoveScaleMultiplier;
 
 #if !UNITY_ANDROID // LeftTrigger not avail on Android game pad
-		moveInfluence *= 1.0f + OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger);
+        // Run!
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || trigger)
+        {
+            if (sprintTimer > 0)
+            {
+                moveInfluence *= 0.7f + OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger);
+                sprintTimer -= Time.deltaTime;
+            }
+        }
+        else
+        {
+            sprintTimer = sprintDuration;
+        }
 #endif
 
 		Vector2 primaryAxis = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick);
