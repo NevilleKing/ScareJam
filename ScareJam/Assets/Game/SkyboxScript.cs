@@ -1,0 +1,20 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class SkyboxScript : MonoBehaviour
+{
+
+
+    public float rot = 0;
+    public Skybox sky;
+    void Start()
+    {
+        sky = GetComponent<Skybox>();
+    }
+    void Update()
+    {
+        rot += 1 * Time.deltaTime;
+        rot %= 180;
+        sky.material.SetFloat("_Rotation", rot);
+    }
+}
