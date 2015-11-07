@@ -9,7 +9,7 @@ public class PlayerDead : MonoBehaviour {
 
     void Awake()
     {
-        anim = GetComponentInParent<Animator>();
+        anim = GetComponent<Animator>();
         enemy = GameObject.FindGameObjectWithTag("Enemy");
         //transform.parent.LookAt(enemy.transform);
         anim.enabled = true;
